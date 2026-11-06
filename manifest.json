@@ -1,0 +1,13 @@
+{
+  "name": "看穿這一局",
+  "short_name": "看穿這一局",
+  "description": "網路交友與性影像誘騙防制 互動教材",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
