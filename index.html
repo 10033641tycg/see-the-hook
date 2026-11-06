@@ -202,6 +202,11 @@
           <button class="opt" data-role="老師"><span class="ic">🧑‍🏫</span><span class="lb">老師</span></button>
           <button class="opt" data-role="其他"><span class="ic">👤</span><span class="lb">其他</span></button>
         </div>
+        <div class="gq">使用情境</div>
+        <div class="opts" id="modeOpts">
+          <button class="opt" data-mode="prevent"><span class="ic">📣</span><span class="lb">預防宣導</span></button>
+          <button class="opt" data-mode="review"><span class="ic">🔁</span><span class="lb">事後回顧</span></button>
+        </div>
         <div class="gq">單位（選填）</div>
         <input type="text" id="unitInput" class="gateinput" placeholder="例如：○○家防中心" autocomplete="off">
       </div>
@@ -213,10 +218,12 @@
   <div id="cover" style="display:none;">
     <div class="cover">
       <div class="kick">看 穿 這 一 局</div>
+      <div id="coverText">
       <h1>他跟別人<br><span class="em">不一樣？</span></h1>
       <p class="lede">你發了一篇文，想交朋友。</p>
       <p class="lede">很多人來敲你，怪的你一下就擋掉了。</p>
       <p class="lede" style="margin-top:12px;"><b>但有一個人很溫柔、很懂你——<br>這一局，就是從他開始的。</b></p>
+      </div>
     </div>
     <div class="selblock">
       <div class="q">你現在是</div>
@@ -236,7 +243,7 @@
 
   <div class="applist" id="menu">
     <div class="listhead"><h2>訊息</h2><div class="who" id="profileLabel"></div><button class="chg" onclick="backToSelect()">切換</button></div>
-    <div class="listnote">最危險的，常常不是一開口就很噁的那種人。<br>是那個<b>跟你很合、很懂你、讓你覺得「他不一樣」</b>的人。<br>看你能不能每一關都看穿。</div>
+    <div class="listnote" id="listNote">最危險的，常常不是一開口就很噁的那種人。<br>是那個<b>跟你很合、很懂你、讓你覺得「他不一樣」</b>的人。<br>看你能不能每一關都看穿。</div>
     <div id="chatlist"></div>
     <div class="foot">情境取材自實務案件型態並加以改編、虛構，僅供辨識與討論教育，不含露骨內容，不代表任何特定個案。</div>
   </div>
@@ -244,7 +251,7 @@
   <div class="chat" id="chat">
     <div class="chathead"><button class="bk" onclick="quitToMenu()">‹</button><div class="av" id="av">🙂</div><div><div class="nm" id="who"></div><div class="rel" id="rel"></div></div></div>
     <div class="msgs" id="msgs"></div>
-    <div class="tray" id="tray" style="display:none;"><div class="pr">你會怎麼回？</div></div>
+    <div class="tray" id="tray" style="display:none;"><div class="pr" id="trayPr">你會怎麼回？</div></div>
   </div>
 
   <div class="flash" id="flash"></div>
@@ -293,18 +300,19 @@ function buildContent(age,g){
   {id:'k1',av:av,who:name,rel:'剛加好友',preview:'嗨～看到你的貼文，我也超愛這個',
    title:'想認識我的加我',sub:'發文交朋友 · 他跟別人不一樣',type:'這一關：最危險的，常常是讓你覺得他不一樣的那個',
    takeaway:['最危險的，常常是','讓你覺得<span class="hl">「他跟別人不一樣」</span>的那個。'],
+   motiveQ:true,
    beats:[
     {scene:[
-      {sys:'你在'+platform+'發了一篇：「'+myAge+'，想交朋友，想認識的加我」。'},
+      {sys:{bored:'你在'+platform+'發了一篇：「'+myAge+'，最近好無聊，想找人聊天」。',upset:'你在'+platform+'發了一篇：「'+myAge+'，最近心情很差，想找人聊」。',attention:'你在'+platform+'發了一篇：「'+myAge+'，想認識的加我，越多人越好」。'}},
       {sys:'不到十分鐘，私訊跳出一堆。有人一開口就很怪，你直接略過。但有一個不一樣。'},
-      {them:'嗨～看到你的貼文，我也超愛玩這個遊戲'},
+      {them:{bored:'嗨～看到你說很無聊，我也是欸',upset:'嗨～看到你說心情不好，還好嗎？',attention:'嗨～看到你的貼文，你好像很好聊欸'}},
       {them:'我'+selfAge+'，跟你差不多啦'},
-      {me:'真的嗎 你玩多久了'},
-      {them:'快一年了，改天一起組隊？'}
+      {me:{bored:'真的嗎 你都在幹嘛',upset:'最近有點煩，家裡跟身體的事都有',attention:'哈哈真的嗎'}},
+      {them:{bored:'都在打遊戲啊，我們應該很合，改天一起玩？',upset:'一定很辛苦吧，沒關係，我陪你聊，你不是一個人',attention:'真的啊，那些亂敲你的人都很怪，我跟他們不一樣'}}
     ],decide:{options:[
-      {label:'好啊，先在'+where+'一起玩就好',v:'held',w:'attention',react:'好喔～'},
-      {label:'好啊，你比剛剛那些人好太多了',v:'grey',w:'attention',fb:'他跟那些怪的比起來是好很多…<br>但「比較好」不代表就安全。',react:'哈哈那些人真的很噁，還好你遇到我'},
-      {label:'好啊！加我私人帳號比較好聊',v:'slip',w:'attention',react:'讚，我現在加你'}
+      {label:'謝謝，先在'+where+'聊就好',v:'held',w:'attention',react:'好喔～'},
+      {label:'你比剛剛那些人好太多了',v:'grey',w:'attention',fb:'他跟那些怪的比起來是好很多…<br>但「比較好」不代表就安全。',react:'哈哈那些人真的很噁，還好你遇到我'},
+      {label:'我跟你說我讀哪間，搞不好住很近',v:'slip',w:'attention',fb:'想拉近距離很正常…<br>但學校和住哪，是可以在現實找到你的線索。',react:'真的假的！那我們搞不好住超近的欸'}
     ]}},
     {scene:[
       {them:{held:'不過'+where+'聊天好卡，打字好不方便',soft:'我就知道我們會很合😆'}},
@@ -317,7 +325,7 @@ function buildContent(age,g){
     ]}}
    ],
    stages:[
-    {step:''+he+'先這樣',t:'跟其他怪人比起來，'+he+'很正常',q:'「我也超愛這個遊戲，跟你差不多大」',d:'貼文底下那些一開口就很噁的人，你一下就擋掉了。但真正會設局的人，通常一開始很正常、很溫和、跟你有共同話題，還說自己年紀跟你差不多——這些都是讓你放下戒心的方法。',truth:'看到你寫了幾歲還來找你的人，要多留意。年紀「差不多」，是他說的，不一定是真的。'},
+    {step:''+he+'先這樣',t:'跟其他怪人比起來，'+he+'很正常',q:'「我跟你差不多大，我陪你」',d:'貼文底下那些一開口就很噁的人，你一下就擋掉了。但真正會設局的人，通常一開始很正常、很溫和，會接住你最需要的東西——你無聊就陪你玩、你心情差就陪你聊、你想被注意就說你特別，還說自己年紀跟你差不多。這些都是讓你放下戒心的方法。如果你在這時候說了學校或住哪，等於把在現實找到你的線索交出去。',truth:'看到你寫了幾歲還來找你的人，要多留意。年紀「差不多」，是他說的，不一定是真的。'},
     {step:'接著',t:'要你換到只有你們兩個的地方',q:'「私訊只有我們兩個，不會有人吵」',d:'從大家看得到的地方，換到只有你們兩個的私訊，是很常見的第一步。在那裡，他說什麼都沒有人看得到。',truth:'不是每個要私訊的人都有問題，但「只有我們兩個」是一個要記住的訊號。'}
    ]},
 
@@ -328,9 +336,9 @@ function buildContent(age,g){
     {scene:[
       {jump:'你們每天都聊 · 過了三天'},
       {sys:he+'每天都先傳早安，晚上陪你聊到睡前。'},
-      {them:'今天上課好無聊，一直在等你下課'},
-      {me:'哈哈我今天被老師罵'},
-      {them:'老師很煩欸，他們都不懂你'},
+      {them:{bored:'今天上課好無聊，一直在等你下課',upset:'你今天還好嗎？還是很煩嗎',attention:'今天又有好多人敲你吧，但我跟他們不一樣'}},
+      {me:{bored:'哈哈我今天被老師罵',upset:'還是有點煩，家裡沒人想聽我講',attention:'對啊，可是很多人都怪怪的'}},
+      {them:{bored:'老師很煩欸，他們都不懂你',upset:'沒關係，他們不聽我聽，你什麼都可以跟我說',attention:'所以你跟我聊就好，只有我懂你'}},
       {them:'跟你聊天好舒服，你好成熟，一點都不像'+ageWord}
     ],decide:{options:[
       {label:'我就是'+ageWord+'啊，跟大家一樣',v:'held',w:'mature',react:'哈哈好啦，但我還是覺得你很特別'},
@@ -442,8 +450,17 @@ function buildContent(age,g){
 /* ---- 安全頁 → 封面 ---- */
 const gate=document.getElementById('gate'),gateBtn=document.getElementById('gateBtn'),roleOpts=document.getElementById('roleOpts'),unitInput=document.getElementById('unitInput');
 const cover=document.getElementById('cover'),menu=document.getElementById('menu'),profileLabel=document.getElementById('profileLabel');
-roleOpts.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{roleOpts.querySelectorAll('.opt').forEach(x=>x.classList.remove('on'));b.classList.add('on');session.role=b.dataset.role;gateBtn.classList.toggle('ready',!!session.role);});
-gateBtn.onclick=()=>{if(!session.role)return;session.unit=unitInput.value.trim();store.session={role:session.role,unit:session.unit,at:new Date().toISOString()};saveStore(store);gate.style.display='none';cover.style.display='flex';};
+roleOpts.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{roleOpts.querySelectorAll('.opt').forEach(x=>x.classList.remove('on'));b.classList.add('on');session.role=b.dataset.role;});
+const modeOpts=document.getElementById('modeOpts');
+function gateChk(){gateBtn.classList.toggle('ready',!!(session.role&&session.mode));}
+roleOpts.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',gateChk));
+modeOpts.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{modeOpts.querySelectorAll('.opt').forEach(x=>x.classList.remove('on'));b.classList.add('on');session.mode=b.dataset.mode;gateChk();});
+function applyMode(){
+  if(session.mode!=='review')return;
+  document.getElementById('coverText').innerHTML='<h1>那時候，<br><span class="em">發生了什麼？</span></h1><p class="lede">這種事，通常不是一下子發生的。</p><p class="lede">我們一起慢慢看，每一步是怎麼走到下一步的。</p><p class="lede" style="margin-top:12px;"><b>不管你那時候怎麼選，<br>錯的都不是你。</b></p>';
+  document.getElementById('listNote').innerHTML='這裡不是考試，沒有人會因為選了什麼被罵。<br>你可以選<b>你那時候真的會怎麼回</b>，也可以選<b>你現在會怎麼做</b>。<br>我們一起看看，這種事是怎麼一步一步發生的。';
+}
+gateBtn.onclick=()=>{if(!(session.role&&session.mode))return;session.unit=unitInput.value.trim();store.session={role:session.role,unit:session.unit,mode:session.mode,at:new Date().toISOString()};saveStore(store);applyMode();gate.style.display='none';cover.style.display='flex';};
 
 const ageOpts=document.getElementById('ageOpts'),genderOpts=document.getElementById('genderOpts'),startBtn=document.getElementById('startBtn');
 ageOpts.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ageOpts.querySelectorAll('.opt').forEach(x=>x.classList.remove('on'));b.classList.add('on');profile.age=b.dataset.age;chk();});
@@ -482,7 +499,7 @@ function renderMenu(){
 /* ---- 引擎 ---- */
 const chat=document.getElementById('chat'),msgs=document.getElementById('msgs'),tray=document.getElementById('tray'),flash=document.getElementById('flash'),debrief=document.getElementById('debrief'),debriefBody=document.getElementById('debriefBody'),whoEl=document.getElementById('who'),avEl=document.getElementById('av'),relEl=document.getElementById('rel');
 let runToken=0;
-function startLevel(id){runToken++;curLevel=activeSet.levels.find(l=>l.id===id);picks=[];lastMood=null;whoEl.textContent=curLevel.who;avEl.textContent=curLevel.av;relEl.textContent=curLevel.rel;msgs.innerHTML='';tray.style.display='none';debrief.classList.remove('show');menu.classList.remove('active');chat.classList.add('active');runBeats(0,runToken);}
+function startLevel(id){runToken++;curLevel=activeSet.levels.find(l=>l.id===id);picks=[];lastMood=null;curMotive=store.motiveLast||'bored';whoEl.textContent=curLevel.who;avEl.textContent=curLevel.av;relEl.textContent=curLevel.rel;msgs.innerHTML='';tray.style.display='none';debrief.classList.remove('show');menu.classList.remove('active');chat.classList.add('active');runBeats(0,runToken);}
 function quitToMenu(){runToken++;chat.classList.remove('active');menu.classList.add('active');debrief.classList.remove('show');tray.style.display='none';renderMenu();}
 function sd(){msgs.scrollTop=msgs.scrollHeight;}
 function esc(t){return t;}
@@ -498,7 +515,10 @@ function thinkTime(t){const n=(''+t).length;return Math.round(Math.min(3000,550+
 function readPause(t){const n=(''+t).length;return Math.min(1200,500+n*22);}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 /* 語氣隨上一題：held＝你拒絕，他轉冷施壓；soft＝你留縫或讓步，他順勢往前推 */
-function resolveLine(m){if(typeof m==='string')return m;if(m&&typeof m==='object'){if(lastMood==='held'&&m.held)return m.held;if(lastMood==='soft'&&m.soft)return m.soft;return m.held||m.soft||'';}return '';}
+let curMotive='bored';
+const MOTIVES={bored:'最近好無聊，想找人聊',upset:'最近心情很差（要開刀、生病、家裡很煩……）',attention:'想要很多人回我、注意我'};
+const MOTIVE_SHORT={bored:'覺得無聊',upset:'心情很差',attention:'想被注意'};
+function resolveLine(m){if(typeof m==='string')return m;if(m&&typeof m==='object'){if(m[curMotive])return m[curMotive];if(lastMood==='held'&&m.held)return m.held;if(lastMood==='soft'&&m.soft)return m.soft;return m.held||m.soft||'';}return '';}
 
 async function playScene(scene,tk){
   for(const m of scene){
@@ -507,12 +527,25 @@ async function playScene(scene,tk){
     else if(m.sys!==undefined){const t=resolveLine(m.sys);addSys(t);await wait(readPause(t)+500);}
     else if(m.inner!==undefined){const t=resolveLine(m.inner);addInner(t);await wait(readPause(t)+500);}
     else if(m.them!==undefined){const t=resolveLine(m.them);await typing(thinkTime(t));if(tk!==runToken)return false;addRow('them',t);await wait(readPause(t));}
-    else if(m.me!==undefined){await wait(600);addRow('me',m.me);await wait(550);}
+    else if(m.me!==undefined){await wait(600);addRow('me',resolveLine(m.me));await wait(550);}
   }
   return tk===runToken;
 }
-async function runBeats(i,tk){
+async function showMotive(tk){
+  await wait(500);
   if(tk!==runToken)return;
+  const pr=document.getElementById('trayPr');pr.textContent='先選一個：你為什麼想發這篇文？';
+  [...tray.querySelectorAll('.choice')].forEach(c=>c.remove());
+  Object.keys(MOTIVES).forEach(k=>{
+    const b=document.createElement('button');b.className='choice';b.textContent=MOTIVES[k];
+    b.onclick=()=>{tray.style.display='none';curMotive=k;store.motiveLast=k;if(!store.motiveFirst)store.motiveFirst=k;saveStore(store);runBeats(0,tk,true);};
+    tray.appendChild(b);
+  });
+  tray.style.display='flex';
+}
+async function runBeats(i,tk,motiveDone){
+  if(tk!==runToken)return;
+  if(i===0&&curLevel.motiveQ&&!motiveDone){return showMotive(tk);}
   if(i>=curLevel.beats.length){setTimeout(()=>{if(tk===runToken)runDebrief();},700);return;}
   const beat=curLevel.beats[i];
   const ok=await playScene(beat.scene,tk);
@@ -526,6 +559,7 @@ async function showDecide(d,i,tk){
   await typing(1100+Math.random()*500); /* 選項前的「⋯」 */
   if(tk!==runToken)return;
   await wait(200);
+  document.getElementById('trayPr').textContent='你會怎麼回？';
   [...tray.querySelectorAll('.choice')].forEach(c=>c.remove());
   shuffle(d.options).forEach(op=>{
     const b=document.createElement('button');b.className='choice';b.textContent=op.label;
@@ -547,7 +581,7 @@ async function showDecide(d,i,tk){
   requestAnimationFrame(()=>requestAnimationFrame(sd));
 }
 function doFeedback(v,fb){
-  if(v==='held'){flash.className='flash safe show';flash.innerHTML='<div class="ic">🛡️</div><div class="tx">'+(fb||'你看穿了。')+'</div>';}
+  if(v==='held'){flash.className='flash safe show';flash.innerHTML='<div class="ic">🛡️</div><div class="tx">'+(fb||(session.mode==='review'?'這一步，你守住了。':'你看穿了。'))+'</div>';}
   else if(v==='grey'){flash.className='flash soft show';flash.innerHTML='<div class="ic">💭</div><div class="tx">'+(fb||'看起來像在拒絕…<br>但其實你留了一條縫給他。')+'</div>';}
   else{flash.className='flash soft show';flash.innerHTML='<div class="ic">💜</div><div class="tx">'+(fb||'他又靠近了一步。<br>這不是你的錯，是他太會包裝。')+'</div>';}
   setTimeout(()=>flash.classList.remove('show'),1550);
@@ -564,8 +598,9 @@ function runDebrief(){
   let pb;
   if(!wk&&held===tot)pb='<div class="profilecard"><div class="lbl">這 一 關</div><div class="wkname">你<span class="hl">每一步都看穿了</span></div><div class="wkdesc">在有人對你這麼好的時候還能看穿，很不容易。真的遇到會更難——把這個感覺記住。</div><div class="scoredots">'+dots+'</div><div class="scorelegend">綠＝看穿　灰＝留了一條縫　紅＝被帶著走</div></div>';
   else{const W=WEAKNESS[wk]||WEAKNESS.attention;pb='<div class="profilecard"><div class="lbl">這 一 關 · 你 最 容 易 中 的 招</div><div class="wkname">你最容易在「<span class="hl">'+W.hl+'</span>」的時候被帶著走</div><div class="wkdesc">'+W.desc+'</div><div class="scoredots">'+dots+'</div><div class="scorelegend">綠＝看穿　灰＝留了一條縫　紅＝被帶著走（這關 '+tot+' 題，你看穿 '+held+' 題）</div></div>';}
+  const motiveCard=curLevel.motiveQ?'<div class="greybox">你發文的原因是「<b>'+MOTIVE_SHORT[curMotive]+'</b>」。<br>注意到了嗎？'+(curMotive==='upset'?'你心情差，他就說要陪你':curMotive==='attention'?'你想被注意，他就說你特別':'你無聊，他就陪你玩')+'——<b>你最需要什麼，他就給什麼</b>。這不是巧合，是他靠近你的方法。</div>':'';
   const stHTML=curLevel.stages.map((s,idx)=>{const pk=picks[idx];const cls=pk?dotCls(pk.v):'';const yp=pk?'<div class="yourpick">你的回答：<b>「'+pk.label+'」</b></div>':'';return '<div class="stage '+cls+'"><div class="step">'+s.step+'</div><h3>'+s.t+'</h3>'+yp+'<p><span class="q">'+s.q+'</span><br>'+s.d+'</p><span class="truth">'+s.truth+'</span></div>';}).join('');
-  debriefBody.innerHTML=pb+'<div class="takeaway"><div class="lbl">記 住 這 句 就 好</div><div class="line">'+curLevel.takeaway.join('<br>')+'</div></div><h2>倒帶看一次</h2><div class="sub">'+curLevel.type+'<br>這些手法就是設計成讓你看不出來。<b>被騙的人沒有錯，錯的是設局的人。</b></div>'+stHTML+'<div class="help">'+HELP+'</div><div class="reflect"><div class="rq"><b>想一下：</b>剛剛哪一句最難拒絕？那時候你心裡在想什麼？</div><div class="rq"><b>最後：</b>如果真的遇到，你會找哪個信得過的大人？<b>現在就想一個名字出來。</b>不一定要是爸媽。</div></div><button class="btn" onclick="startLevel(\''+curLevel.id+'\')">再玩一次</button><button class="btn ghost" onclick="quitToMenu()">回訊息列表</button>';
+  debriefBody.innerHTML=pb+motiveCard+'<div class="takeaway"><div class="lbl">記 住 這 句 就 好</div><div class="line">'+curLevel.takeaway.join('<br>')+'</div></div><h2>倒帶看一次</h2><div class="sub">'+curLevel.type+'<br>這些手法就是設計成讓你看不出來。<b>被騙的人沒有錯，錯的是設局的人。</b></div>'+stHTML+'<div class="help">'+HELP+'</div><div class="reflect"><div class="rq"><b>想一下：</b>剛剛哪一句最難拒絕？那時候你心裡在想什麼？</div><div class="rq"><b>最後：</b>如果真的遇到，你會找哪個信得過的大人？<b>現在就想一個名字出來。</b>不一定要是爸媽。</div></div><button class="btn" onclick="startLevel(\''+curLevel.id+'\')">再玩一次</button><button class="btn ghost" onclick="quitToMenu()">回訊息列表</button>';
   debriefBody.parentElement.scrollTop=0;debrief.scrollTop=0;
   debrief.classList.add('show');
 }
@@ -591,7 +626,8 @@ function showSummary(){
 function showResults(){
   const lv=activeSet.levels,sess=store.session||{};
   let html='<h2>第一次作答紀錄</h2><div class="sub">這是孩子<b>第一次自己選</b>的答案，重玩不會蓋掉。給陪伴的大人事後回顧用。</div>';
-  if(sess.role||sess.unit)html+='<div style="font-size:12px;color:#8e8e93;margin-bottom:14px;">使用者：'+(sess.role||'—')+(sess.unit?'｜'+sess.unit:'')+'</div>';
+  if(sess.role||sess.unit)html+='<div style="font-size:12px;color:#8e8e93;margin-bottom:6px;">使用者：'+(sess.role||'—')+(sess.unit?'｜'+sess.unit:'')+(sess.mode?'｜'+(sess.mode==='review'?'事後回顧':'預防宣導'):'')+'</div>';
+  if(store.motiveFirst)html+='<div class="greybox" style="margin-bottom:14px;">第一次選的發文原因：<b>'+MOTIVES[store.motiveFirst]+'</b></div>';
   lv.forEach(L=>{const first=store.first[L.id];if(!first)return;const h=first.filter(p=>p.v==='held').length;html+='<div class="rvlevel"><div class="rvhead">'+L.title+'<span class="rvscore">'+h+'/'+first.length+' 看穿</span></div>';first.forEach((p,idx)=>{const st=L.stages[idx]||{};const tag=p.v==='held'?'<span class="rvtag held">看穿</span>':p.v==='slip'?'<span class="rvtag slip">被帶走</span>':'<span class="rvtag grey">留了縫</span>';html+='<div class="rvrow"><div class="rvq">〔'+(st.t||'')+'〕'+(st.q||'')+'</div><div class="rvans">'+tag+'<span class="rvlabel">「'+p.label+'」</span></div></div>';});html+='</div>';});
   html+='<div class="help">回顧時建議的問法：不是「你為什麼選這個」，而是<b>「當下那一句，你心裡在想什麼？」</b>——讓孩子說，不要急著糾正。</div><button class="btn ghost" onclick="quitToMenu()">回訊息列表</button>';
   debriefBody.innerHTML=html;debrief.scrollTop=0;debrief.classList.add('show');
